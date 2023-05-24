@@ -1,6 +1,6 @@
 import streamlit as st
 import pandas as pd
-top_novart = pd.read_csv('C:/Users/Work Runa Art/Downloads/Novart_top.csv',sep=';')
+top_novart = pd.read_csv('Novart_top.csv',sep=';')
 
 def clear_text():
     st.session_state["sku"] = ""
