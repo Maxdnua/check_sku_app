@@ -38,7 +38,7 @@ if st.button("Calculate_parts", on_click=clear_text):
     merged = combined.merge(counts, how='left', on=['SKU', 'Part']).fillna(0)
     merged['Max'] = merged.groupby('SKU')['count'].transform('max')
     merged['remain'] = merged['Max'] - merged['count']
-    to_print = merged[merged['remain'] != 0][['SKU','Part','remain']].rename(columns={'remain':'Print'})
+    to_print = merged[(merged['remain'] != 0) & (merged['SKU'].isin(data[data['TOP']]['SKU'].unique()))][['SKU','Part','remain']].rename(columns={'remain':'Print'})
     st.session_state['merged'] = merged
     st.write(to_print)
 
