@@ -46,7 +46,7 @@ completed = st.session_state['merged'].groupby('SKU', as_index=False)['count'].a
 completed = completed[completed['count'] > 0]
 completed['Lager'] = completed['SKU'].isin(top_novart['SKU'])
 
-oxo = st.session_state['merged'][(st.session_state['merged']['remain'] != 0) & (st.session_state['merged']['SKU'].isin(data[data['TOP']]['SKU'].unique()))][['SKU','Part','remain']].rename(columns={'remain':'Print'})
+oxo = st.session_state['merged'][(st.session_state['merged']['remain'] != 0) & (st.session_state['merged']['SKU'].isin(st.session_state['data'][st.session_state['data']['TOP']]['SKU'].unique()))][['SKU','Part','remain']].rename(columns={'remain':'Print'})
 
 col1, col2 = st.columns(2)
 col1.download_button("Download OXO", data= oxo.to_csv(index=False),file_name='retur_sku.csv',mime='text/csv')
