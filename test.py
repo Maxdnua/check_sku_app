@@ -86,4 +86,6 @@ elif option == 'Retur Toni':
         elif r['Destination'] == 'Zapas':
             st.warning(r['Destination'])
         elif r['Destination'] == 'Prime':
-            st.info(r['Destination'])    
+            st.info(r['Destination'])
+        elif r['Destination'] == 'Recycling':
+            st.error(r['Destination'])
