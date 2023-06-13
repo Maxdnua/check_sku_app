@@ -80,12 +80,12 @@ elif option == 'Retur Toni':
 
     for i, r in reture_scaned.iterrows():
         if r['Destination'] == 'Lager':
-            st.success(r['Destination'] + " " + r['Lagerort'] + " - MHD: " + r['MHD'])
+            st.success(r['Destination'] + " " + r['Lagerort'] + " - MHD: " + r['MHD'] + " - " + r['Good Status'] + "St.")
         elif r['Destination'] == 'Lager New':
-            st.success("Lager  - внести в новое место")
+            st.success("Lager  - внести в новое место - " + r['Good Status'] + "St.")
         elif r['Destination'] == 'Zapas':
-            st.warning(r['Destination'])
+            st.warning(r['Destination'] + " - " + r['Good Status'] + "St.")
         elif r['Destination'] == 'Prime':
-            st.info(r['Destination'])
+            st.info(r['Destination'] + " - " + r['Good Status'] + "St.")
         elif r['Destination'] == 'Recycling':
             st.error(r['Destination'])
