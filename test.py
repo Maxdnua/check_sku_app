@@ -1,10 +1,10 @@
 import streamlit as st
 import pandas as pd
 
-option = st.selectbox('Выберите модуль:',('Retur Toni', 'Retur Amazon'))
+option = st.selectbox('Выберите модуль:',('Runa Art', 'Novart'))
 
 
-if option == 'Retur Amazon':
+if option == 'Novart':
     top_novart = pd.read_csv('Novart_top.csv',sep=';', dtype={'EAN':'str'})
 
     def clear_text():
@@ -16,7 +16,7 @@ if option == 'Retur Amazon':
     if 'merged' not in st.session_state:
         st.session_state['merged'] = pd.DataFrame(columns = ['SKU','Part','remain','count'])
         
-    module = st.radio('Choose what to scan', ['SKU','EAN'])
+    module = st.radio('Select what to scan', ['SKU','EAN'])
 
     if module == 'SKU':
 
@@ -67,25 +67,34 @@ if option == 'Retur Amazon':
             st.success('SKU is TOP', icon="✅")
         else:
             st.error('SKU in Müll', icon="🚨")
-elif option == 'Retur Toni':
-    reture = pd.read_csv('Return Status.csv',sep=';', dtype={'EAN':'str'})
 
-    st.header('Reture Toni')
+elif option == 'Runa Art':
 
-    ean = st.text_input('Scan ean', key='ean')
+    lager = pd.read_csv('lager_runa.csv',sep=',', dtype={'barcode':str})
 
-    reture_scaned = reture[reture['EAN'] == ean]
+    st.header('Bilder Runa Art - Stand am 18.10.2023')
 
-    st.write(reture_scaned)
+    ean = st.text_input('Scan EAN', key='ean')
 
-    for i, r in reture_scaned.iterrows():
-        if r['Destination'] == 'Lager':
-            st.success(r['Destination'] + " " + r['Lagerort'] + " - MHD: " + r['MHD'] + " - " + str(r['Good Status']) + "St.")
-        elif r['Destination'] == 'Lager New':
-            st.success("Lager  - внести в новое место - " + str(r['Good Status']) + "St.")
-        elif r['Destination'] == 'Zapas':
-            st.warning(r['Destination'] + " - " + str(r['Good Status']) + "St.")
-        elif r['Destination'] == 'Prime':
-            st.info(r['Destination'] + " - " + str(r['Good Status']) + "St.")
-        elif r['Destination'] == 'Recycling':
-            st.error(r['Destination'])
+    lager_scaned = lager[lager['barcode'] == ean]
+
+
+    if ean in lager['barcode'].tolist():
+            st.success('SKU is Lager', icon="✅")
+    else:
+            st.error('SKU in Müll', icon="🚨")
+
+
+#    st.write(reture_scaned)
+
+#   for i, r in reture_scaned.iterrows():
+#       if r['Destination'] == 'Lager':
+#           st.success(r['Destination'] + " " + r['Lagerort'] + " - MHD: " + r['MHD'] + " - " + str(r['Good Status']) + "St.")
+#       elif r['Destination'] == 'Lager New':
+#           st.success("Lager  - внести в новое место - " + str(r['Good Status']) + "St.")
+#       elif r['Destination'] == 'Zapas':
+#           st.warning(r['Destination'] + " - " + str(r['Good Status']) + "St.")
+#       elif r['Destination'] == 'Prime':
+#           st.info(r['Destination'] + " - " + str(r['Good Status']) + "St.")
+#       elif r['Destination'] == 'Recycling':
+#           st.error(r['Destination'])
