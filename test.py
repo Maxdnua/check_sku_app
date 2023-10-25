@@ -70,17 +70,30 @@ if option == 'Novart':
 
 elif option == 'Runa Art':
 
-    lager = pd.read_csv('lager_runa.csv',sep=',', dtype={'barcode':str})
+    lager = pd.read_csv('https://plenty.runa-art.de/rest/catalogs/export/0b13c8bc-3c19-5677-843b-24c4cd883cc8/download/public?extension=csv',sep=',', dtype={'barcode':str}, parse_dates=['MHD'])
+    sales = pd.read_csv('sales_last_6_m.csv', sep=';', dtype={'barcode':str})
 
-    st.header('Bilder Runa Art - Stand am 18.10.2023')
+    lager = lager.dropna(axis=0, subset='variationTag')
+    lagerbilder = lager[lager['variationTag'].str.contains('Lagerbilder')]
+
 
     ean = st.text_input('Scan EAN', key='ean')
 
-    lager_scaned = lager[lager['barcode'] == ean]
+    lager_scaned = lagerbilder[lagerbilder['barcode'] == ean]
 
+    lager_scaned = lager_scaned.sort_values('MHD') 
+    lager_scaned['MHD'] = lager_scaned['MHD'].dt.strftime('%d.%m.%Y')
 
-    if ean in lager['barcode'].tolist():
-            st.success('SKU is Lager', icon="✅")
+    whouse = sales.merge(lager, how='left',left_on='sku', right_on='number', indicator=True)
+    whouse = whouse[whouse['_merge'] == 'left_only'][['sku','barcode_x']]
+    whouse_scaned = whouse[whouse['barcode_x'] == ean]
+
+    if ean in lager_scaned['barcode'].tolist(): 
+        for sku in lager_scaned['number'].unique(): st.success('SKU ' + sku + ' in Lager', icon="✅")
+        for i, r in lager_scaned.iterrows():
+            st.info(str(r['quantity']) + " St." + " in " + "**" + r['LocationName'] + "** - MHD: **" + r['MHD'] + "**",icon="ℹ️")
+    elif ean in whouse_scaned['barcode_x'].tolist():
+            for sku in whouse_scaned['sku'].unique(): st.warning('SKU ' + sku + ' in Zapas', icon="⚠️")
     else:
             st.error('SKU in Müll', icon="🚨")
 
