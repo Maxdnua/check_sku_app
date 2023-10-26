@@ -77,22 +77,27 @@ elif option == 'Runa Art':
     lagerbilder = lager[lager['variationTag'].str.contains('Lagerbilder')]
 
 
-    ean = st.text_input('Scan EAN', key='ean')
-
-    lager_scaned = lagerbilder[lagerbilder['barcode'] == ean]
+    ean = st.text_input('Scan EAN/SKU', key='ean')
+    if len(ean) < 12:
+        lager_scaned = lagerbilder[lagerbilder['number'] == ean[:7]]
+    else:
+        lager_scaned = lagerbilder[lagerbilder['barcode'] == ean]
 
     lager_scaned = lager_scaned.sort_values('MHD') 
     lager_scaned['MHD'] = lager_scaned['MHD'].dt.strftime('%d.%m.%Y')
 
     whouse = sales.merge(lager, how='left',left_on='sku', right_on='number', indicator=True)
     whouse = whouse[whouse['_merge'] == 'left_only'][['sku','barcode_x']]
-    whouse_scaned = whouse[whouse['barcode_x'] == ean]
+    if len(ean) < 12:
+        whouse_scaned = whouse[whouse['sku'] == ean[:7]]
+    else:
+        whouse_scaned = whouse[whouse['barcode_x'] == ean]
 
-    if ean in lager_scaned['barcode'].tolist(): 
+    if ean in lager_scaned['barcode'].tolist() or ean[:7] in lager_scaned['number'].tolist(): 
         for sku in lager_scaned['number'].unique(): st.success('SKU ' + sku + ' in Lager', icon="✅")
         for i, r in lager_scaned.iterrows():
             st.info(str(r['quantity']) + " St." + " in " + "**" + r['LocationName'] + "** - MHD: **" + r['MHD'] + "**",icon="ℹ️")
-    elif ean in whouse_scaned['barcode_x'].tolist():
+    elif ean in whouse_scaned['barcode_x'].tolist() or ean[:7] in whouse_scaned['sku'].tolist():
             for sku in whouse_scaned['sku'].unique(): st.warning('SKU ' + sku + ' in Zapas', icon="⚠️")
     else:
             st.error('SKU in Müll', icon="🚨")
