@@ -6,6 +6,7 @@ option = st.selectbox('Выберите модуль:',('Check For Dopechatka','
 
 if option == 'Check For Dopechatka':
     top_novart = pd.read_csv('Novart_top.csv',sep=';', dtype={'EAN':'str'})
+    rest_novart = pd.read_csv('Rest_top.csv',sep=';', dtype={'EAN':'str'})
 
     def clear_text():
         st.session_state["sku"] = ""
@@ -22,11 +23,12 @@ if option == 'Check For Dopechatka':
 
         sku = st.text_input('Scan Image', value="", key='sku')
         if sku[:8] in top_novart['SKU'].tolist():
-            st.success('SKU is OK', icon="✅")
-            Lager = True
+            st.success('SKU - OK (есть допечатка)', icon="✅")
+    
+        elif sku[:8] in rest_novart['SKU'].tolist():
+            st.info('SKU - OK (отложить)', icon="🔜")
         else:
             st.error('SKU in Müll', icon="🚨")
-            Lager = False
 
         #if sku != "":
         #    new_row = {"SKU": sku[:8], 'Part':int(sku[9:]), 'TOP':Lager}
